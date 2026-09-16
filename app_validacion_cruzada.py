@@ -1,5 +1,4 @@
 
-
 import pickle
 import base64
 import textwrap
@@ -22,15 +21,13 @@ st.set_page_config(
 APP_DIR = Path(__file__).resolve().parent
 RUTA_MODELO = APP_DIR / "modelo-cla.pkl"
 RUTA_FONDO = APP_DIR / "corazon1.jpg"
+RUTA_ICONO = APP_DIR / "corazon_icono.png"
 
 
 # =========================================================
 # FUNCIONES AUXILIARES
 # =========================================================
 def html(contenido):
-    """
-    Renderiza HTML evitando que Streamlit lo interprete como bloque de código.
-    """
     st.markdown(
         textwrap.dedent(contenido).strip(),
         unsafe_allow_html=True,
@@ -45,30 +42,32 @@ def cargar_imagen_base64(ruta):
 
 
 fondo_base64 = cargar_imagen_base64(RUTA_FONDO)
+icono_base64 = cargar_imagen_base64(RUTA_ICONO)
 
 if fondo_base64:
     fondo_css = (
         "linear-gradient(90deg, rgba(3,7,18,.96) 0%, "
-        "rgba(4,9,22,.89) 48%, rgba(4,9,22,.66) 100%), "
+        "rgba(4,9,22,.88) 48%, rgba(4,9,22,.68) 100%), "
         f'url("data:image/jpeg;base64,{fondo_base64}")'
     )
 else:
     fondo_css = (
-        "radial-gradient(circle at 78% 20%, rgba(218,0,81,.18), transparent 30%), "
+        "radial-gradient(circle at 80% 20%, rgba(255, 79, 123, .16), transparent 30%), "
+        "radial-gradient(circle at 20% 85%, rgba(97, 184, 255, .14), transparent 30%), "
         "linear-gradient(135deg, #050914 0%, #08111f 55%, #02050b 100%)"
     )
 
 
 # =========================================================
-# CSS
+# CSS PRINCIPAL
 # =========================================================
 html(
     f"""
     <style>
     :root {{
         --pink: #ff4f7b;
-        --pink-soft: #ff8cab;
-        --blue: #61b8ff;
+        --pink-soft: #ff90ac;
+        --blue: #71c1ff;
         --text: #f7f9fc;
         --muted: #aab4c7;
         --panel: rgba(10, 17, 31, 0.72);
@@ -76,11 +75,13 @@ html(
         --border: rgba(255, 255, 255, 0.12);
     }}
 
+    /* Fondo general */
     [data-testid="stAppViewContainer"] {{
         background: {fondo_css};
         background-size: cover;
         background-position: center center;
         background-attachment: fixed;
+        overflow: hidden;
     }}
 
     [data-testid="stAppViewContainer"]::before {{
@@ -88,10 +89,20 @@ html(
         position: fixed;
         inset: 0;
         pointer-events: none;
-        background:
-            radial-gradient(circle at 78% 18%, rgba(44,154,255,.13), transparent 24%),
-            radial-gradient(circle at 22% 82%, rgba(255,79,123,.10), transparent 24%);
         z-index: 0;
+        background:
+            radial-gradient(circle at 78% 18%, rgba(44,154,255,.10), transparent 24%),
+            radial-gradient(circle at 24% 82%, rgba(255,79,123,.10), transparent 24%);
+        animation: glowMove 14s ease-in-out infinite alternate;
+    }}
+
+    @keyframes glowMove {{
+        0% {{
+            transform: translate(0px, 0px) scale(1);
+        }}
+        100% {{
+            transform: translate(-10px, 10px) scale(1.04);
+        }}
     }}
 
     [data-testid="stHeader"] {{
@@ -104,15 +115,127 @@ html(
 
     .block-container {{
         max-width: 1180px;
-        padding-top: 2.2rem;
+        padding-top: 2rem;
         padding-bottom: 4rem;
         position: relative;
-        z-index: 1;
+        z-index: 2;
     }}
 
+    /* Corazones flotantes */
+    .hearts-layer {{
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 1;
+        overflow: hidden;
+    }}
+
+    .heart-float {{
+        position: absolute;
+        background-image: url("data:image/png;base64,{icono_base64}");
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        opacity: 0.14;
+        filter: drop-shadow(0 0 16px rgba(255, 79, 123, 0.20));
+        animation-timing-function: ease-in-out;
+        animation-iteration-count: infinite;
+    }}
+
+    .heart-1 {{
+        width: 95px; height: 95px;
+        top: 6%; left: 3%;
+        animation: float1 8s infinite;
+    }}
+
+    .heart-2 {{
+        width: 75px; height: 75px;
+        top: 14%; right: 6%;
+        animation: float2 10s infinite;
+    }}
+
+    .heart-3 {{
+        width: 105px; height: 105px;
+        top: 38%; left: 1%;
+        animation: float3 9s infinite;
+    }}
+
+    .heart-4 {{
+        width: 85px; height: 85px;
+        top: 52%; right: 3%;
+        animation: float4 11s infinite;
+    }}
+
+    .heart-5 {{
+        width: 110px; height: 110px;
+        bottom: 10%; left: 6%;
+        animation: float5 9s infinite;
+    }}
+
+    .heart-6 {{
+        width: 72px; height: 72px;
+        bottom: 7%; right: 9%;
+        animation: float6 8s infinite;
+    }}
+
+    .heart-7 {{
+        width: 68px; height: 68px;
+        top: 74%; left: 37%;
+        animation: float7 12s infinite;
+    }}
+
+    .heart-8 {{
+        width: 60px; height: 60px;
+        top: 28%; right: 29%;
+        animation: float8 9.5s infinite;
+    }}
+
+    @keyframes float1 {{
+        0%, 100% {{ transform: translateY(0px) rotate(-8deg) scale(1); }}
+        50% {{ transform: translateY(-18px) rotate(6deg) scale(1.04); }}
+    }}
+
+    @keyframes float2 {{
+        0%, 100% {{ transform: translateY(0px) translateX(0px) rotate(8deg); }}
+        50% {{ transform: translateY(-14px) translateX(-8px) rotate(-8deg); }}
+    }}
+
+    @keyframes float3 {{
+        0%, 100% {{ transform: translateY(0px) rotate(-10deg); }}
+        50% {{ transform: translateY(-20px) rotate(10deg); }}
+    }}
+
+    @keyframes float4 {{
+        0%, 100% {{ transform: translateY(0px) translateX(0px) rotate(12deg); }}
+        50% {{ transform: translateY(-16px) translateX(7px) rotate(-4deg); }}
+    }}
+
+    @keyframes float5 {{
+        0%, 100% {{ transform: translateY(0px) rotate(-6deg) scale(1); }}
+        50% {{ transform: translateY(-18px) rotate(8deg) scale(1.05); }}
+    }}
+
+    @keyframes float6 {{
+        0%, 100% {{ transform: translateY(0px) translateX(0px) rotate(10deg); }}
+        50% {{ transform: translateY(-12px) translateX(-8px) rotate(-6deg); }}
+    }}
+
+    @keyframes float7 {{
+        0%, 100% {{ transform: translateY(0px) rotate(-14deg); }}
+        50% {{ transform: translateY(-10px) rotate(7deg); }}
+    }}
+
+    @keyframes float8 {{
+        0%, 100% {{ transform: translateY(0px) rotate(6deg); }}
+        50% {{ transform: translateY(-15px) rotate(-7deg); }}
+    }}
+
+    /* Encabezado */
     .hero {{
-        max-width: 790px;
-        padding: 1.2rem 0 1.5rem 0;
+        max-width: 800px;
+        padding: 1.2rem 0 1.4rem 0;
+        position: relative;
+        z-index: 2;
     }}
 
     .hero-badge {{
@@ -120,31 +243,49 @@ html(
         align-items: center;
         gap: .45rem;
         padding: .45rem .9rem;
-        border: 1px solid rgba(255,79,123,.38);
+        border: 1px solid rgba(255,79,123,.40);
         background: rgba(255,79,123,.10);
         border-radius: 999px;
-        color: #ff91ad;
+        color: #ff9ab3;
         font-size: .78rem;
         font-weight: 800;
         letter-spacing: .08em;
         text-transform: uppercase;
         margin-bottom: 1rem;
+        backdrop-filter: blur(8px);
+        animation: pulseBadge 2.2s infinite;
+    }}
+
+    @keyframes pulseBadge {{
+        0%, 100% {{
+            box-shadow: 0 0 0 rgba(255,79,123,0);
+        }}
+        50% {{
+            box-shadow: 0 0 20px rgba(255,79,123,.18);
+        }}
     }}
 
     .hero-title {{
         margin: 0;
         color: var(--text);
-        font-size: clamp(2.4rem, 5vw, 4.4rem);
-        line-height: .98;
-        font-weight: 900;
-        letter-spacing: -.055em;
+        font-size: clamp(2.5rem, 5vw, 4.6rem);
+        line-height: .97;
+        font-weight: 950;
+        letter-spacing: -.06em;
     }}
 
     .hero-title span {{
-        background: linear-gradient(90deg, #ff4f7b 0%, #ff9ab3 55%, #72c3ff 100%);
+        background: linear-gradient(90deg, #ff4f7b 0%, #ff9ab3 52%, #72c3ff 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
+        background-size: 200% auto;
+        animation: shimmer 5s linear infinite;
+    }}
+
+    @keyframes shimmer {{
+        0% {{ background-position: 0% center; }}
+        100% {{ background-position: 200% center; }}
     }}
 
     .hero-subtitle {{
@@ -156,29 +297,21 @@ html(
     }}
 
     .mini-line {{
-        width: 74px;
+        width: 86px;
         height: 4px;
         border-radius: 999px;
         background: linear-gradient(90deg, var(--pink), var(--blue));
-        margin-top: 1.1rem;
-        box-shadow: 0 0 20px rgba(255,79,123,.35);
+        margin-top: 1.15rem;
+        box-shadow: 0 0 22px rgba(255,79,123,.35);
+        animation: linePulse 2.8s ease-in-out infinite;
     }}
 
-    /* Formulario como tarjeta glass real */
-    div[data-testid="stForm"] {{
-        background: linear-gradient(
-            135deg,
-            rgba(12, 20, 36, .84),
-            rgba(8, 14, 27, .67)
-        );
-        border: 1px solid var(--border);
-        border-radius: 24px;
-        padding: 1.25rem 1.25rem 1rem 1.25rem;
-        backdrop-filter: blur(18px);
-        -webkit-backdrop-filter: blur(18px);
-        box-shadow: 0 22px 65px rgba(0, 0, 0, .34);
+    @keyframes linePulse {{
+        0%, 100% {{ transform: scaleX(1); opacity: 1; }}
+        50% {{ transform: scaleX(1.15); opacity: .82; }}
     }}
 
+    /* Secciones */
     .section-heading {{
         margin: .35rem 0 1rem 0;
     }}
@@ -205,6 +338,42 @@ html(
         margin-top: .28rem;
     }}
 
+    /* Formulario */
+    div[data-testid="stForm"] {{
+        background: linear-gradient(
+            135deg,
+            rgba(12, 20, 36, .84),
+            rgba(8, 14, 27, .67)
+        );
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        padding: 1.3rem 1.3rem 1rem 1.3rem;
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        box-shadow: 0 22px 65px rgba(0, 0, 0, .34);
+        position: relative;
+        overflow: hidden;
+    }}
+
+    div[data-testid="stForm"]::before {{
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+            120deg,
+            transparent 0%,
+            rgba(255,255,255,.03) 35%,
+            transparent 70%
+        );
+        animation: formGlow 7s linear infinite;
+        pointer-events: none;
+    }}
+
+    @keyframes formGlow {{
+        0% {{ transform: translateX(-100%); }}
+        100% {{ transform: translateX(100%); }}
+    }}
+
     label,
     [data-testid="stWidgetLabel"] p {{
         color: #f2f5fa !important;
@@ -222,6 +391,10 @@ html(
         color: white !important;
     }}
 
+    div[data-baseweb="slider"] > div > div {{
+        background-color: #ff5c83 !important;
+    }}
+
     div[data-testid="stFormSubmitButton"] button {{
         width: 100%;
         min-height: 3rem;
@@ -235,10 +408,11 @@ html(
     }}
 
     div[data-testid="stFormSubmitButton"] button:hover {{
-        transform: translateY(-1px);
+        transform: translateY(-2px) scale(1.01);
         box-shadow: 0 16px 38px rgba(255,85,126,.36);
     }}
 
+    /* Tabs */
     button[data-baseweb="tab"] {{
         color: #b5bfd0;
         font-weight: 750;
@@ -248,10 +422,11 @@ html(
         color: #ff789a;
     }}
 
+    /* Tarjetas de resultados */
     .result-card {{
         border-radius: 24px;
-        padding: 1.45rem 1.55rem;
-        min-height: 185px;
+        padding: 1.5rem 1.6rem;
+        min-height: 210px;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -259,6 +434,18 @@ html(
         backdrop-filter: blur(18px);
         -webkit-backdrop-filter: blur(18px);
         box-shadow: 0 20px 55px rgba(0,0,0,.30);
+        animation: cardRise .55s ease;
+    }}
+
+    @keyframes cardRise {{
+        from {{
+            opacity: 0;
+            transform: translateY(14px);
+        }}
+        to {{
+            opacity: 1;
+            transform: translateY(0px);
+        }}
     }}
 
     .result-positive {{
@@ -285,11 +472,21 @@ html(
 
     .result-value {{
         color: white;
-        font-size: 3.8rem;
+        font-size: 4rem;
         line-height: 1;
         font-weight: 950;
         letter-spacing: -.05em;
         margin: .45rem 0;
+        animation: heartbeat 1.8s ease-in-out infinite;
+        transform-origin: center;
+    }}
+
+    @keyframes heartbeat {{
+        0%, 100% {{ transform: scale(1); }}
+        10% {{ transform: scale(1.05); }}
+        20% {{ transform: scale(.98); }}
+        30% {{ transform: scale(1.08); }}
+        40% {{ transform: scale(1); }}
     }}
 
     .result-copy {{
@@ -298,14 +495,16 @@ html(
         line-height: 1.5;
     }}
 
+    /* Probabilidades */
     .prob-card {{
         background: rgba(8, 15, 28, .78);
         border: 1px solid var(--border);
         border-radius: 20px;
-        padding: 1.15rem 1.2rem;
+        padding: 1.2rem 1.2rem;
         backdrop-filter: blur(14px);
         -webkit-backdrop-filter: blur(14px);
-        min-height: 185px;
+        min-height: 210px;
+        animation: cardRise .55s ease;
     }}
 
     .prob-caption {{
@@ -334,7 +533,7 @@ html(
 
     .prob-track {{
         width: 100%;
-        height: 9px;
+        height: 10px;
         background: rgba(255,255,255,.08);
         border-radius: 999px;
         overflow: hidden;
@@ -345,23 +544,21 @@ html(
         height: 100%;
         border-radius: 999px;
         background: linear-gradient(90deg, #3e9be0, #78c8ff);
+        animation: growBar 1.2s ease;
     }}
 
     .prob-fill-si {{
         height: 100%;
         border-radius: 999px;
         background: linear-gradient(90deg, #d92758, #ff7998);
+        animation: growBar 1.2s ease;
     }}
 
-    .summary-panel {{
-        background: rgba(8, 15, 28, .72);
-        border: 1px solid var(--border);
-        border-radius: 20px;
-        padding: 1rem 1.1rem;
-        backdrop-filter: blur(14px);
-        -webkit-backdrop-filter: blur(14px);
+    @keyframes growBar {{
+        from {{ width: 0%; }}
     }}
 
+    /* Métricas y tablas */
     div[data-testid="stMetric"] {{
         background: rgba(8, 15, 28, .76);
         border: 1px solid var(--border);
@@ -412,17 +609,42 @@ html(
         padding: 2rem 0 .5rem 0;
     }}
 
-    @media (max-width: 760px) {{
+    @media (max-width: 768px) {{
+        .heart-float {{
+            opacity: 0.08;
+        }}
+
         .block-container {{
             padding-top: 1.2rem;
         }}
+
         .hero-title {{
-            font-size: 2.7rem;
+            font-size: 2.8rem;
         }}
     }}
     </style>
     """
 )
+
+
+# =========================================================
+# CAPA DE CORAZONES FLOTANTES
+# =========================================================
+if icono_base64:
+    html(
+        """
+        <div class="hearts-layer">
+            <div class="heart-float heart-1"></div>
+            <div class="heart-float heart-2"></div>
+            <div class="heart-float heart-3"></div>
+            <div class="heart-float heart-4"></div>
+            <div class="heart-float heart-5"></div>
+            <div class="heart-float heart-6"></div>
+            <div class="heart-float heart-7"></div>
+            <div class="heart-float heart-8"></div>
+        </div>
+        """
+    )
 
 
 # =========================================================
@@ -440,8 +662,7 @@ try:
     modelo, labelencoder, variables, min_max_scaler = cargar_modelo()
 except FileNotFoundError:
     st.error(
-        "No se encontró 'modelo-cla.pkl'. "
-        "Debe estar en la misma carpeta que esta aplicación."
+        "No se encontró 'modelo-cla.pkl'. Debe estar en la misma carpeta que esta aplicación."
     )
     st.stop()
 
@@ -467,6 +688,9 @@ html(
 )
 
 
+# =========================================================
+# TABS
+# =========================================================
 tab_prediccion, tab_modelo = st.tabs(
     ["🫀 Predicción", "📊 Rendimiento del modelo"]
 )
@@ -490,6 +714,7 @@ with tab_prediccion:
     )
 
     with st.form("formulario_prediccion"):
+
         col1, col2 = st.columns(2, gap="large")
 
         with col1:
@@ -544,8 +769,11 @@ with tab_prediccion:
         )
 
     if enviar:
+
+        st.toast("Predicción generada correctamente", icon="🫀")
+
         # -------------------------------------------------
-        # Conversión a los valores del dataset original
+        # Conversión a los valores originales del dataset
         # -------------------------------------------------
         mapa_si_no = {
             "No": "No",
@@ -573,7 +801,7 @@ with tab_prediccion:
         )
 
         # -------------------------------------------------
-        # MISMO ESQUEMA DE VARIABLES DEL ENTRENAMIENTO
+        # Preprocesamiento igual al entrenamiento
         # -------------------------------------------------
         data_preparada = datos.copy()
 
@@ -584,9 +812,6 @@ with tab_prediccion:
             dtype=int,
         )
 
-        # En entrenamiento las variables binarias quedaron como *_Yes.
-        # En un único registro usamos drop_first=False y luego reindexamos
-        # para conservar correctamente el 1 cuando la respuesta es "Yes".
         data_preparada = pd.get_dummies(
             data_preparada,
             columns=[
@@ -610,19 +835,15 @@ with tab_prediccion:
         )
 
         # -------------------------------------------------
-        # PREDICCIÓN
+        # Predicción
         # -------------------------------------------------
-        prediccion_cod = int(
-            modelo.predict(data_preparada)[0]
-        )
+        prediccion_cod = int(modelo.predict(data_preparada)[0])
 
         prediccion = str(
             labelencoder.inverse_transform([prediccion_cod])[0]
         )
 
-        probabilidades = modelo.predict_proba(
-            data_preparada
-        )[0]
+        probabilidades = modelo.predict_proba(data_preparada)[0]
 
         etiquetas = labelencoder.inverse_transform(
             modelo.classes_.astype(int)
@@ -653,7 +874,7 @@ with tab_prediccion:
         )
 
         # -------------------------------------------------
-        # RESULTADO
+        # Resultado visual
         # -------------------------------------------------
         st.write("")
 
@@ -669,10 +890,7 @@ with tab_prediccion:
             """
         )
 
-        col_resultado, col_prob = st.columns(
-            [1.05, 1],
-            gap="large",
-        )
+        col_resultado, col_prob = st.columns([1.05, 1], gap="large")
 
         with col_resultado:
             if resultado_positivo:
@@ -705,9 +923,7 @@ with tab_prediccion:
                 f"""
                 <div class="prob-card">
                     <div class="prob-caption">Probabilidad estimada por clase</div>
-                    <div class="prob-big">
-                        {max(prob_no, prob_si):.1f} %
-                    </div>
+                    <div class="prob-big">{max(prob_no, prob_si):.1f} %</div>
 
                     <div class="prob-row">
                         <span>Clase NO</span>
@@ -717,7 +933,7 @@ with tab_prediccion:
                         <div class="prob-fill-no" style="width:{prob_no:.2f}%"></div>
                     </div>
 
-                    <div class="prob-row" style="margin-top:.85rem;">
+                    <div class="prob-row" style="margin-top:.9rem;">
                         <span>Clase SÍ</span>
                         <strong>{prob_si:.1f} %</strong>
                     </div>
@@ -772,25 +988,20 @@ with tab_prediccion:
 
         st.download_button(
             "⬇ Descargar resultado en CSV",
-            data=resultado_descarga.to_csv(
-                index=False
-            ).encode("utf-8"),
+            data=resultado_descarga.to_csv(index=False).encode("utf-8"),
             file_name="resultado_prediccion.csv",
             mime="text/csv",
             use_container_width=True,
         )
 
-        with st.expander(
-            "Ver variables preparadas para el modelo"
-        ):
+        with st.expander("Ver variables preparadas para el modelo"):
             st.dataframe(
                 data_preparada,
                 use_container_width=True,
             )
 
         st.caption(
-            "Uso académico. La salida del modelo no constituye "
-            "un diagnóstico médico ni una probabilidad clínica individual."
+            "Uso académico. La salida del modelo no constituye un diagnóstico médico ni una probabilidad clínica individual."
         )
 
 
@@ -805,8 +1016,7 @@ with tab_modelo:
             <div class="section-kicker">Validación cruzada</div>
             <div class="section-title">Comparación del desempeño</div>
             <div class="section-copy">
-                La tabla comparacion_CV del notebook guarda test_f1_macro,
-                por lo que estos valores corresponden a F1 macro, no a accuracy.
+                La tabla comparacion_CV corresponde a F1 macro promedio en los 10 folds.
             </div>
         </div>
         """
@@ -855,8 +1065,7 @@ with tab_modelo:
     )
 
     st.info(
-        "En la comparación mostrada, KNN presenta el F1 macro promedio "
-        "más alto entre los modelos evaluados."
+        "KNN presentó el mayor F1 macro promedio dentro de los modelos comparados."
     )
 
 
